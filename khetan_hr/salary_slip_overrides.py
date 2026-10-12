@@ -1662,7 +1662,10 @@ class SalarySlip(HRMSSalarySlip):
 
 	def get_amount_based_on_payment_days(self, row):
 		amount, additional_amount = row.amount, row.additional_amount
-		timesheet_component = self._salary_structure_doc.salary_component
+		if not getattr(self, "_salary_structure_doc", None) and self.salary_structure:
+			self._salary_structure_doc = frappe.get_cached_doc("Salary Structure", self.salary_structure)
+		structure_doc = getattr(self, "_salary_structure_doc", None)
+		timesheet_component = structure_doc.salary_component if structure_doc else None
 
 		if (
 			self.salary_structure
